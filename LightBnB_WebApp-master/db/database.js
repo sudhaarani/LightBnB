@@ -43,7 +43,17 @@ const getUserWithEmail = function (email) {
  * @return {Promise<{}>} A promise to the user.
  */
 const getUserWithId = function (id) {
-  return Promise.resolve(users[id]);
+  // return Promise.resolve(users[id]);
+  console.log("inside getUserWithId func ");
+  return pool
+    .query(`select * from users where id=$1`, [id]) // tristanjacobs@gmail.com
+    .then((result) => {
+      console.log("user:", result.rows[0]);
+      return result.rows[0] || null;
+    })
+    .catch((err) => {
+      console.log("Error::", err.message);
+    });
 };
 
 /**
