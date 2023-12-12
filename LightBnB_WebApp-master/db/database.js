@@ -30,7 +30,7 @@ const getUserWithEmail = function (email) {
     .query(`select * from users where email=$1`, [email]) // tristanjacobs@gmail.com
     .then((result) => {
       console.log("user:", result.rows[0]);
-      return result.rows[0];
+      return result.rows[0] || null;
     })
     .catch((err) => {
       console.log("Error::", err.message);
