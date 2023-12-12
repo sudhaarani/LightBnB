@@ -71,7 +71,7 @@ const addUser = function (user) {
     .query(`INSERT INTO users(name,email,password) VALUES($1,$2,$3) RETURNING *;`, [user.name, user.email, user.password]) // tristanjacobs@gmail.com
     .then((result) => {
       console.log("user:", result.rows[0]);
-      return result.rows[0] || null;
+      return result.rows[0];
     })
     .catch((err) => {
       console.log("Error::", err.message);
@@ -86,7 +86,23 @@ const addUser = function (user) {
  * @return {Promise<[{}]>} A promise to the reservations.
  */
 const getAllReservations = function (guest_id, limit = 10) {
-  return getAllProperties(null, 2);
+  console.log("inside getAllReservations func ");
+  return pool
+    .query(`SELECT reservations.id,thumbnail_photo_url,title,cost_per_night,number_of_bathrooms,number_of_bedrooms,parking_spaces, start_date,end_date,
+AVG(rating) AS average_rating FROM properties
+JOIN reservations ON properties.id=reservations.property_id
+JOIN property_reviews ON properties.id=property_reviews.property_id
+WHERE reservations.guest_id=$1
+GROUP BY reservations.id,properties.id
+ORDER BY start_date
+LIMIT $2;`, [guest_id, limit])
+    .then((result) => {
+      console.log("user:", result.rows);
+      return result.rows;
+    })
+    .catch((err) => {
+      console.log("Error::", err.message);
+    });
 };
 
 /// Properties
@@ -102,7 +118,7 @@ const getAllProperties = function (options, limit = 10) {
   return pool
     .query(`SELECT * FROM properties LIMIT $1`, [limit])
     .then((result) => {
-     // console.log(result.rows);
+      // console.log(result.rows);
       return result.rows;
     })
     .catch((err) => {
