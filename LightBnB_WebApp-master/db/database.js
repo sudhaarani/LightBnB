@@ -17,14 +17,24 @@ const pool = new Pool({
  * @return {Promise<{}>} A promise to the user.
  */
 const getUserWithEmail = function (email) {
-  let resolvedUser = null;
-  for (const userId in users) {
-    const user = users[userId];
-    if (user && user.email.toLowerCase() === email.toLowerCase()) {
-      resolvedUser = user;
-    }
-  }
-  return Promise.resolve(resolvedUser);
+  // let resolvedUser = null;
+  // for (const userId in users) {
+  //   const user = users[userId];
+  //   if (user && user.email.toLowerCase() === email.toLowerCase()) {
+  //     resolvedUser = user;
+  //   }
+  // }
+  // return Promise.resolve(resolvedUser);
+  console.log("inside getUserWithEmail func ");
+  return pool
+    .query(`select * from users where email=$1`, [email]) // tristanjacobs@gmail.com
+    .then((result) => {
+      console.log("user:", result.rows[0]);
+      return result.rows[0];
+    })
+    .catch((err) => {
+      console.log("Error::", err.message);
+    });
 };
 
 /**
@@ -75,9 +85,9 @@ const getAllProperties = function (options, limit = 10) {
      // console.log(result.rows);
       return result.rows;
     })
-  .catch((err) => {
-    console.log(err.message);
-  });
+    .catch((err) => {
+      console.log(err.message);
+    });
 };
 
 /**
