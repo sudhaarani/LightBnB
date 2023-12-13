@@ -115,8 +115,52 @@ LIMIT $2;`, [guest_id, limit])
  */
 const getAllProperties = function (options, limit = 10) {
   console.log('Limit value:', limit);
-  return pool
-    .query(`SELECT * FROM properties LIMIT $1`, [limit])
+  const queryParams = [];
+
+  let queryString = `
+  SELECT properties.*, avg(property_reviews.rating) as average_rating
+  FROM properties
+  JOIN property_reviews ON properties.id = property_id
+  `;
+  if (options.city || options.owner_id || (options.minimum_price_per_night && options.maximum_price_per_night)) {
+    console.log("inside if where clause, options::", options);
+    queryString += `WHERE`;
+  }
+
+  if (options.city) {
+    queryParams.push(`%${options.city}%`);
+    queryString += ` city LIKE $${queryParams.length}`;
+  }
+  if (options.owner_id) {
+    if (queryParams.length > 0) {
+      queryString += ` AND`;
+    }
+    queryParams.push(Number(options.owner_id));
+    queryString += ` owner_id = $${queryParams.length}`;
+  }
+  if (options.minimum_price_per_night && options.maximum_price_per_night) {
+    if (queryParams.length > 0) {
+      queryString += ` AND`;
+    }
+    queryParams.push(Number(options.minimum_price_per_night) * 100);
+    queryParams.push(Number(options.maximum_price_per_night) * 100);
+    queryString += ` cost_per_night BETWEEN $${queryParams.length - 1} AND $${queryParams.length}`;
+  }
+
+  queryString += ` GROUP BY properties.id`;
+  if (options.minimum_rating) {
+    queryParams.push(Number(options.minimum_rating));
+    queryString += ` HAVING AVG(property_reviews.rating)>=$${queryParams.length}`;
+  }
+
+  queryParams.push(limit);
+  queryString += ` ORDER BY cost_per_night
+  LIMIT $${queryParams.length};
+  `;
+
+  console.log(queryString, queryParams);
+
+  return pool.query(queryString, queryParams)
     .then((result) => {
       // console.log(result.rows);
       return result.rows;
