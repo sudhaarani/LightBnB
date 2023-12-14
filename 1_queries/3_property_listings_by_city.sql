@@ -1,3 +1,5 @@
+-- Show specific details about properties located in Vancouver including their average rating.
+
 Select properties.id, title, cost_per_night,AVG(property_reviews.rating) AS average_rating
 from properties
 LEFT JOIN property_reviews ON property_reviews.property_id=properties.id
