@@ -61,12 +61,16 @@ A simple multi-page Airbnb clone that uses a server-side Javascript to display i
 1. Clone this repository.
 2. Install dependencies using the `npm install` command.
 3. Update your database by running the following commangs in your psql
-```\i migrations/01_schema.sql
+```
+   \i migrations/01_schema.sql
    \i seeds/01_seeds.sql
-   \i seeds/02_seeds.sql```
+   \i seeds/02_seeds.sql
+   ```
 4. To start the web server
-```cd LightBnB_WebApp-master
-   npm run local```
+```
+   cd LightBnB_WebApp-master
+   npm run local
+   ```
 5. The app will be served at <http://localhost:3000/> in your browser.
 
 ## Dependencies
