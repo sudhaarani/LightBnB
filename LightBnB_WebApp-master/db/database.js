@@ -117,7 +117,7 @@ LIMIT $2;`, [guest_id, limit])
 // to accept arguments that will enable filtering(can filter the list of properties based on city,
 //minimum and maximum cost, and minimum rating)
 const getAllProperties = function (options, limit = 10) {
-  console.log('Limit value:', limit);
+  console.log('inside getAllProperties func , Limit value:', limit);
   const queryParams = [];
 
   let queryString = `
